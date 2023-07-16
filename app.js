@@ -1,4 +1,5 @@
 const express = require('express');
+const passport = require('passport');
 
 const app = express();
 const cors = require('cors');
@@ -14,9 +15,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
 app.use(express.json());
-
+app.use(passport.initialize());
 app.use('/api', router);
 
 app.listen(port, () => {
