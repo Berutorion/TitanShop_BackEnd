@@ -1,8 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
+const { Users } = require('../models');
 
-const userController = {
+const UserController = {
   register: async (req, res) => {
     try {
       const {
@@ -27,7 +27,7 @@ const userController = {
   login: async (req, res) => {
     try {
       const { account, password } = req.body;
-      const user = await User.findOne({ where: { account } });
+      const user = await Users.findOne({ where: { account } });
       if (!user) {
         return res.status(400).json({ message: '此帳號不存在' });
       }
@@ -41,14 +41,14 @@ const userController = {
         name: user.name,
       };
       const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1 day' });
-      res.status(200).json({ token });
+      res.status(200).json({ token, role: user.role, userId: user.id });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   },
   getAllUsers: async (req, res) => {
     try {
-      const users = await User.findAll({ attributes: ['id', 'account', 'name', 'role'] });
+      const users = await Users.findAll({ attributes: ['id', 'account', 'name', 'role'] });
       res.status(200).json({ users });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -57,7 +57,7 @@ const userController = {
   getUser: async (req, res) => {
     try {
       const { id } = req.params;
-      const user = await User.findByPk(id, { attributes: ['id', 'account', 'name', 'role'] });
+      const user = await Users.findByPk(id, { attributes: ['id', 'account', 'name', 'role'] });
       res.status(200).json({ user });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -73,7 +73,7 @@ const userController = {
       }
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(password, salt);
-      await User.update({ name, password: hash }, { where: { id } });
+      await Users.update({ name, password: hash }, { where: { id } });
       res.status(200).json({ message: '更新成功' });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -82,11 +82,11 @@ const userController = {
   deleteUser: async (req, res) => {
     try {
       const { id } = req.user;
-      const user = await User.findByPk(id);
+      const user = await Users.findByPk(id);
       if (!user) {
         return res.status(400).json({ message: '此帳號不存在' });
       }
-      await User.destroy({ where: { id } });
+      await Users.destroy({ where: { id } });
       res.status(200).json({ message: '刪除成功' });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -94,4 +94,4 @@ const userController = {
   },
 };
 
-module.exports = userController;
+module.exports = UserController;

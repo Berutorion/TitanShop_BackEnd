@@ -1,11 +1,15 @@
 const router = require('express').Router();
-const ProductController = require('../controllers/ProductController');
+const { ProductController } = require('../controllers/ProductController');
 
-// create product CRUD routes
-router.get('/', ProductController.getAllProducts);
-router.get('/:id', ProductController.getProduct);
-router.post('/', ProductController.createProduct);
-router.put('/:id', ProductController.updateProduct);
-router.delete('/:id', ProductController.deleteProduct);
+// create product route
+router.post('/create', ProductController.create);
+router.get('/', ProductController.getAll);
+router.get('/:id', ProductController.getOne);
+router.put('/:id', ProductController.update);
+router.delete('/:id', ProductController.delete);
+router.get('/search', ProductController.search);
+
+router.get('/seller/:id', ProductController.getMyProducts);
+router.get('/seller/:id/:productId', ProductController.getMyProduct);
 
 module.exports = router;

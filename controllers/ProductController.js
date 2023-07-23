@@ -1,66 +1,123 @@
-const { product } = require('../models');
+const { Op } = require('sequelize');
+const { Products } = require('../models');
 
 const ProductController = {
-  getAllProducts: async (req, res) => {
+  getAll: async (req, res) => {
     try {
-      const products = await product.findAll({ attributes: ['id', 'name', 'price', 'description'] });
-      res.status(200).json({ products });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  },
-  getProduct: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const products = await product.findByPk(id, { attributes: ['id', 'name', 'price', 'description'] });
-      res.status(200).json({ products });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  },
-  createProduct: async (req, res) => {
-    try {
-      const {
-        name, price, description,
-      } = req.body;
-      const products = await product.create({
-        name,
-        price,
-        description,
+      const products = await Products.findAll({
+        where: {
+          stock: {
+            [Op.gt]: 0,
+          },
+        },
+        limit: Number.parseInt(req.query.limit, 10) || 20,
       });
-      res.status(200).json({ products });
+      res.status(200).json(products);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json(error);
     }
   },
-  updateProduct: async (req, res) => {
+  getOne: async (req, res) => {
     try {
-      const { id } = req.params;
-      const {
-        name, price, description,
-      } = req.body;
-      const products = await product.findByPk(id);
-      await products.update({
-        name,
-        price,
-        description,
+      const product = await Products.findByPk(req.params.id);
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+  create: async (req, res) => {
+    try {
+      const product = await Products.create(req.body);
+      res.status(201).json(product);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+  update: async (req, res) => {
+    try {
+      const product = await Products.findByPk(req.params.id);
+      await product.update(req.body);
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+  delete: async (req, res) => {
+    try {
+      const product = await Products.findByPk(req.params.id);
+      await product.destroy();
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+  getMyProducts: async (req, res) => {
+    try {
+      const products = await Products.findAll({
+        where: {
+          seller: req.params.id,
+        },
       });
-      res.status(200).json({ products });
+      res.status(200).json(products);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json(error);
     }
   },
-  deleteProduct: async (req, res) => {
+  getMyProduct: async (req, res) => {
     try {
-      const { id } = req.params;
-      const products = await product.findByPk(id);
-      await products.destroy();
-      res.status(200).json({ products });
+      const product = await Products.findOne({
+        where: {
+          id: req.params.productId,
+          seller: req.params.id,
+        },
+      });
+      res.status(200).json(product);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json(error);
     }
   },
-
+  updateMyProduct: async (req, res) => {
+    try {
+      const product = await Products.findOne({
+        where: {
+          id: req.params.id,
+          seller: req.user.id,
+        },
+      });
+      await product.update(req.body);
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+  deleteMyProduct: async (req, res) => {
+    try {
+      const product = await Products.findOne({
+        where: {
+          id: req.params.id,
+          seller: req.user.id,
+        },
+      });
+      await product.destroy();
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+  search: async (req, res) => {
+    try {
+      const products = await Products.findAll({
+        where: {
+          name: {
+            [Op.like]: `%${req.query.name}%`,
+          },
+        },
+      });
+      res.status(200).json(products);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
 };
 
-module.exports = ProductController;
+module.exports = { ProductController };
