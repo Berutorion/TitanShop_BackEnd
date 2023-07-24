@@ -28,6 +28,7 @@ const ProductController = {
   create: async (req, res) => {
     try {
       const product = await Products.create(req.body);
+      console.log('create product', product);
       res.status(201).json(product);
     } catch (error) {
       res.status(500).json(error);

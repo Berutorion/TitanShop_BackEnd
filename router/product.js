@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { ProductController } = require('../controllers/ProductController');
 
 // create product route
-router.post('/create', ProductController.create);
+router.post('/', ProductController.create);
 router.get('/', ProductController.getAll);
 router.get('/:id', ProductController.getOne);
 router.put('/:id', ProductController.update);
