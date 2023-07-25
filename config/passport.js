@@ -13,7 +13,7 @@ passport.use(
     async (account, password, done) => {
       try {
         const user = await Users.findOne({ where: { account } });
-        if (!user) throw new Error('使用者不存在');
+        if (!user) return done(null, false, { message: '使用者不存在' });
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) return done(null, false, { message: '密碼錯誤' });
         done(null, user);

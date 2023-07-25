@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx nodemon app.js",
     "eslintInit": "eslint --init",
     "dbInit":"npx sequelize db:create && npx sequelize db:migrate && npx sequelize db:seed:all ",
     "dbUndoSeed":"npx sequelize-cli db:seed:undo:all",

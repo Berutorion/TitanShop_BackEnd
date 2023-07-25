@@ -67,7 +67,7 @@ const UserController = {
     try {
       const { id } = req.user;
       const { name, password } = req.body;
-      const user = await User.findByPk(id);
+      const user = await Users.findByPk(id);
       if (!user) {
         return res.status(400).json({ message: '此帳號不存在' });
       }
