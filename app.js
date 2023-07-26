@@ -23,7 +23,7 @@ app.listen(port, () => {
   console.log(`Server is running on ${port}`);
 });
 
-app.get('/', (req, res) => res.send('Hello welcome to Attendance-server'));
+app.get('/', (req, res) => res.send('Hello welcome to titan-back-end-server'));
 app.use('*', (req, res) => {
   // return an error
   res.status(404).json({

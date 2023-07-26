@@ -8,5 +8,6 @@ router.delete('/:id', CartController.deleteCart);
 router.delete('/user/:id', CartController.deleteCartByUser);
 // get total price
 router.get('/totalPrice', CartController.getTotalPrice);
+router.post('/purchase', CartController.purchase);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const { Carts, Products } = require('../models');
+const { Carts, Products, Order } = require('../models');
 
 const CartController = {
   getCart: async (req, res) => {
@@ -48,9 +48,7 @@ const CartController = {
           id: req.params.id,
         },
       });
-      console.log(cart);
       await cart.update(req.body);
-      console.log(cart);
       res.status(200).json(cart);
     } catch (error) {
       res.status(500).json(error);
@@ -92,6 +90,40 @@ const CartController = {
       });
       const totalPrice = cart.reduce((acc, cur) => acc + cur.Product.price * cur.Product.quantity, 0);
       res.status(200).json(totalPrice);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+  purchase: async (req, res) => {
+    try {
+      const cart = await Carts.findAll({
+        raw: true,
+        nest: true,
+        where: {
+          user_id: req.body.userId,
+        },
+        include: {
+          model: Products,
+          attributes: ['price', 'stock', 'seller', 'id'],
+        },
+      });
+      const totalPrice = cart.reduce((acc, cur) => acc + cur.Product.price * cur.quantity, 0);
+      cart.forEach(async (item) => {
+        const product = await Products.findByPk(item.Product.id);
+        await product.update({
+          stock: product.stock - item.quantity,
+        });
+      });
+      await Carts.destroy({
+        where: {
+          user_id: req.body.userId,
+        },
+      });
+      const order = await Order.create({
+        totalPrice,
+        user_id: req.body.userId,
+      });
+      res.status(200).json({ message: '成功購買', orderId: order.id });
     } catch (error) {
       res.status(500).json(error);
     }

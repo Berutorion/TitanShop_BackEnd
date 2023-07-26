@@ -10,7 +10,7 @@ const ProductController = {
             [Op.gt]: 0,
           },
         },
-        limit: Number.parseInt(req.query.limit, 10) || 20,
+        // limit: Number.parseInt(req.query.limit, 10) || 20,
       });
       res.status(200).json(products);
     } catch (error) {
@@ -107,13 +107,24 @@ const ProductController = {
   },
   search: async (req, res) => {
     try {
-      const products = await Products.findAll({
+      // 檢查 minprice 和 maxprice 是否為空，並動態建立查詢條件
+      const queryOptions = {
         where: {
           name: {
-            [Op.like]: `%${req.query.name}%`,
+            [Op.like]: `%${req.body.name}%`,
+          },
+          stock: {
+            [Op.gt]: 0,
           },
         },
-      });
+      };
+
+      if (req.body.minPrice && req.body.maxPrice) {
+        queryOptions.where.price = {
+          [Op.between]: [req.body.minPrice, req.body.maxPrice],
+        };
+      }
+      const products = await Products.findAll(queryOptions);
       res.status(200).json(products);
     } catch (error) {
       res.status(500).json(error);

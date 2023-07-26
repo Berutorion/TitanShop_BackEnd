@@ -11,6 +11,7 @@ router.post('/login', LoginAuth, UserController.login);
 router.use('/user', JWTAuth, UserRouter);
 router.use('/product', ProductRouter);
 router.use('/cart', JWTAuth, CartRouter);
+router.use('/order', JWTAuth, require('./order'));
 
 router.use(errorHandler);
 module.exports = router;

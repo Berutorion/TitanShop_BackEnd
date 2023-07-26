@@ -8,6 +8,17 @@ primary_region = "hkg"
 
 [env]
   PORT = "8080"
+  NODE_ENV = "production"
+  CORS_ORIGIN_OPTION="*"
+  JWT_SECRET="secret"
+
+  DB_USERNAME="admin"
+  DB_PASSWORD="26604079"
+  DB_DATABASE="titan_shop"
+  DB_HOST="flydatabase.internal"
+
+[deploy]
+  release_command = "npx sequelize db:migrate"
 
 [http_service]
   internal_port = 8080
