@@ -43,13 +43,13 @@ DB_HOST=
 ### 資料庫初始化
 
 ```bash 
-npm run dbinit
+npm run dbInit
 ```
 
 ### 運行專案
 
 ```bash
-npm run dev
+npm run start
 ```
 
 ## 專案技術
